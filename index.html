@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Court Scheduler — Tennis & Pickleball</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #2d5a27; --mid: #3d7a35; --light: #5a9e50;
+    --lime: #b5f03d; --cream: #f5f0e8; --sand: #e8dfc8;
+    --dark: #1a1a1a; --white: #ffffff;
+    --blue: #3b82f6; --blue-bg: #dbeafe; --blue-text: #1d4ed8;
+    --amber: #f59e0b; --amber-bg: #fef3c7; --amber-text: #b45309;
+    --purple: #8b5cf6; --purple-bg: #ede9fe; --purple-text: #6d28d9;
+    --radius: 12px; --shadow: 0 8px 40px rgba(0,0,0,0.18);
+  }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--dark); min-height:100vh; overflow-x:hidden; }
+
+  header {
+    background:var(--green); padding:22px 40px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:relative; overflow:hidden;
+  }
+  header::before {
+    content:''; position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.04) 60px,rgba(255,255,255,.04) 62px);
+    pointer-events:none;
+  }
+  .header-left h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,5vw,3rem); color:var(--lime); letter-spacing:2px; line-height:1; }
+  .header-left p { color:rgba(255,255,255,.6); font-size:.82rem; margin-top:3px; }
+  .header-right { display:flex; gap:10px; align-items:center; }
+  .header-badge { background:var(--lime); color:var(--green); font-family:'Bebas Neue',sans-serif; font-size:.85rem; letter-spacing:1.5px; padding:5px 14px; border-radius:100px; }
+  .recurring-mgr-btn {
+    background:rgba(255,255,255,.12); color:white; border:1px solid rgba(255,255,255,.25);
+    font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:600; padding:6px 14px;
+    border-radius:100px; cursor:pointer; transition:.15s; letter-spacing:.3px;
+  }
+  .recurring-mgr-btn:hover { background:rgba(255,255,255,.2); }
+
+  main { max-width:1100px; margin:0 auto; padding:36px 20px 60px; }
+
+  .month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .month-nav h2 { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; color:var(--green); }
+  .nav-btn { background:var(--green); color:var(--lime); border:none; width:42px; height:42px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .nav-btn:hover { background:var(--mid); transform:scale(1.05); }
+
+  .legend { display:flex; gap:18px; margin-bottom:18px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:.78rem; color:#555; font-weight:500; }
+  .legend-dot { width:11px; height:11px; border-radius:50%; }
+  .dot-singles { background:var(--blue); }
+  .dot-doubles { background:var(--amber); }
+  .dot-recurring { background:var(--purple); }
+
+  .cal-header { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:6px; }
+  .cal-header span { text-align:center; font-size:.72rem; font-weight:700; color:var(--green); letter-spacing:1px; text-transform:uppercase; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+
+  .day-cell {
+    background:var(--white); border-radius:10px; padding:9px 7px 7px;
+    min-height:88px; cursor:pointer; border:2px solid transparent;
+    transition:border-color .15s, transform .1s, box-shadow .15s; position:relative; overflow:hidden;
+  }
+  .day-cell:hover:not(.past):not(.empty) { border-color:var(--mid); box-shadow:0 4px 18px rgba(45,90,39,.14); transform:translateY(-2px); }
+  .day-cell.empty { background:transparent; cursor:default; border:none; }
+  .day-cell.past { opacity:.4; cursor:not-allowed; }
+  .day-cell.today { border-color:var(--lime); background:linear-gradient(135deg,#fff 70%,#f0fae0); }
+  .day-num { font-weight:700; font-size:.9rem; color:var(--dark); display:block; margin-bottom:5px; }
+  .day-cell.today .day-num { color:var(--green); }
+  .player-chips { display:flex; flex-direction:column; gap:2px; }
+  .player-chip { font-size:.64rem; font-weight:500; padding:2px 6px; border-radius:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chip-singles { background:var(--blue-bg); color:var(--blue-text); }
+  .chip-doubles { background:var(--amber-bg); color:var(--amber-text); }
+  .chip-recurring { background:var(--purple-bg); color:var(--purple-text); }
+  .more-label { font-size:.62rem; color:#999; margin-top:1px; padding-left:2px; }
+  .add-hint { position:absolute; bottom:5px; right:7px; font-size:1.1rem; color:var(--mid); opacity:0; transition:.15s; }
+  .day-cell:hover:not(.past):not(.empty) .add-hint { opacity:.45; }
+
+  /* ── OVERLAY / MODAL ── */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.52); z-index:100; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto; backdrop-filter:blur(3px); }
+  .overlay.open { display:flex; }
+  .modal { background:var(--white); border-radius:20px; width:100%; max-width:540px; overflow:hidden; box-shadow:var(--shadow); animation:slideUp .2s ease-out; margin:auto; }
+  @keyframes slideUp { from{transform:translateY(28px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-header { background:var(--green); padding:20px 26px 16px; position:relative; }
+  .modal-header h3 { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--lime); letter-spacing:1.5px; }
+  .modal-header p { color:rgba(255,255,255,.55); font-size:.8rem; margin-top:2px; }
+  .modal-close { position:absolute; top:14px; right:16px; background:rgba(255,255,255,.12); border:none; color:white; width:30px; height:30px; border-radius:50%; font-size:.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .modal-close:hover { background:rgba(255,255,255,.22); }
+  .modal-body { padding:22px 26px 26px; }
+
+  /* Players */
+  .section-title { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999; margin-bottom:10px; }
+  .player-list { display:flex; flex-direction:column; gap:7px; margin-bottom:22px; }
+  .player-row { display:flex; align-items:flex-start; gap:10px; background:var(--cream); border-radius:10px; padding:10px 12px; }
+  .player-info { flex:1; min-width:0; }
+  .player-name { font-weight:600; font-size:.88rem; }
+  .player-time { font-size:.74rem; color:#666; margin-top:2px; }
+  .player-note { font-size:.72rem; color:#999; margin-top:1px; font-style:italic; }
+  .player-recur { font-size:.68rem; color:var(--purple-text); background:var(--purple-bg); padding:1px 7px; border-radius:100px; display:inline-block; margin-top:3px; }
+  .badge { font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:100px; white-space:nowrap; flex-shrink:0; margin-top:1px; }
+  .badge-singles { background:var(--blue-bg); color:var(--blue-text); }
+  .badge-doubles { background:var(--amber-bg); color:var(--amber-text); }
+  .del-btn { background:none; border:none; color:#ccc; cursor:pointer; font-size:.95rem; padding:2px; border-radius:4px; transition:.1s; flex-shrink:0; margin-top:1px; }
+  .del-btn:hover { color:#ef4444; }
+  .no-players { text-align:center; padding:14px; color:#bbb; font-size:.82rem; font-style:italic; background:var(--cream); border-radius:10px; border:2px dashed #ddd; margin-bottom:22px; }
+
+  /* Form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .form-grid .full { grid-column:1/-1; }
+  label { display:block; font-size:.76rem; font-weight:600; color:#555; margin-bottom:4px; letter-spacing:.3px; }
+  input[type=text], input[type=email], input[type=time], textarea, select {
+    width:100%; padding:9px 11px; border:1.5px solid #e0e0e0; border-radius:8px;
+    font-family:'DM Sans',sans-serif; font-size:.88rem; color:var(--dark); background:var(--cream);
+    transition:.15s; outline:none; -webkit-appearance:none; appearance:none;
+  }
+  input:focus, textarea:focus, select:focus { border-color:var(--mid); background:white; }
+  textarea { resize:none; height:60px; }
+
+  /* Toggle row */
+  .toggle-row { display:flex; gap:6px; }
+  .toggle-btn { flex:1; background:var(--cream); border:2px solid #e0e0e0; border-radius:8px; padding:8px 6px; cursor:pointer; text-align:center; transition:.15s; }
+  .toggle-btn .tb-icon { font-size:1.1rem; display:block; margin-bottom:2px; }
+  .toggle-btn .tb-label { font-size:.72rem; font-weight:600; color:#666; }
+  .toggle-btn.active { border-color:var(--green); background:#edf7e9; }
+  .toggle-btn.active .tb-label { color:var(--green); }
+
+  /* Time slots */
+  .slot-row { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .slot-btn { background:var(--cream); border:2px solid #e0e0e0; border-radius:8px; padding:8px 4px; cursor:pointer; text-align:center; transition:.15s; }
+  .slot-btn .sl-icon { font-size:1.1rem; display:block; margin-bottom:2px; }
+  .slot-btn .sl-label { font-size:.68rem; font-weight:600; color:#666; }
+  .slot-btn.active { border-color:var(--green); background:#edf7e9; }
+  .slot-btn.active .sl-label { color:var(--green); }
+
+  /* Time range */
+  .time-range { display:grid; grid-template-columns:1fr auto 1fr; align-items:end; gap:8px; }
+  .time-range .sep { padding-bottom:9px; color:#aaa; font-size:.8rem; text-align:center; }
+
+  /* Game type */
+  .type-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .type-btn { background:var(--cream); border:2px solid #e0e0e0; border-radius:10px; padding:9px 6px; cursor:pointer; text-align:center; transition:.15s; }
+  .type-btn .ty-icon { font-size:1.2rem; display:block; margin-bottom:3px; }
+  .type-btn .ty-label { font-size:.76rem; font-weight:600; color:#555; }
+  .type-btn.active.singles { border-color:var(--blue); background:#eff6ff; }
+  .type-btn.active.singles .ty-label { color:var(--blue-text); }
+  .type-btn.active.doubles { border-color:var(--amber); background:#fffbeb; }
+  .type-btn.active.doubles .ty-label { color:var(--amber-text); }
+
+  /* Recurring */
+  .recur-toggle { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--cream); border-radius:10px; cursor:pointer; border:2px solid #e0e0e0; transition:.15s; user-select:none; }
+  .recur-toggle.on { border-color:var(--purple); background:var(--purple-bg); }
+  .recur-toggle input[type=checkbox] { display:none; }
+  .recur-check { width:18px; height:18px; border:2px solid #ccc; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:.7rem; flex-shrink:0; transition:.15s; }
+  .recur-toggle.on .recur-check { background:var(--purple); border-color:var(--purple); color:white; }
+  .recur-text { font-size:.82rem; font-weight:600; color:#555; }
+  .recur-toggle.on .recur-text { color:var(--purple-text); }
+
+  .recur-options { background:var(--purple-bg); border:2px solid #ddd6fe; border-radius:10px; padding:14px; display:none; margin-top:6px; }
+  .recur-options.visible { display:block; }
+  .recur-sub-title { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--purple-text); margin-bottom:8px; }
+
+  .recur-type-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px; }
+  .recur-type-btn { background:white; border:2px solid #ddd6fe; border-radius:8px; padding:7px 6px; cursor:pointer; text-align:center; transition:.15s; }
+  .recur-type-btn .rt-icon { font-size:1rem; display:block; margin-bottom:2px; }
+  .recur-type-btn .rt-label { font-size:.7rem; font-weight:600; color:var(--purple-text); }
+  .recur-type-btn.active { border-color:var(--purple); background:white; box-shadow:0 0 0 2px var(--purple); }
+
+  .dow-row { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .dow-btn { background:white; border:2px solid #ddd6fe; border-radius:6px; padding:6px 2px; cursor:pointer; text-align:center; font-size:.66rem; font-weight:700; color:var(--purple-text); transition:.15s; }
+  .dow-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
+
+  .week-row { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:10px; }
+  .week-btn { background:white; border:2px solid #ddd6fe; border-radius:6px; padding:6px 2px; cursor:pointer; text-align:center; font-size:.66rem; font-weight:700; color:var(--purple-text); transition:.15s; }
+  .week-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
+
+  .divider { height:1px; background:#eee; margin:18px 0; }
+
+  .submit-btn { width:100%; background:var(--green); color:var(--lime); border:none; border-radius:10px; padding:12px; font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:1.5px; cursor:pointer; margin-top:14px; transition:.15s; }
+  .submit-btn:hover { background:var(--mid); transform:translateY(-1px); }
+  .submit-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+  /* Recurring manager modal */
+  .recur-mgr-body { padding:22px 26px 26px; }
+  .recur-rule-row { display:flex; align-items:flex-start; gap:10px; background:var(--cream); border-radius:10px; padding:11px 13px; margin-bottom:8px; }
+  .recur-rule-info { flex:1; min-width:0; }
+  .recur-rule-name { font-weight:600; font-size:.88rem; }
+  .recur-rule-detail { font-size:.74rem; color:#777; margin-top:2px; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--dark); color:white; padding:11px 22px; border-radius:100px; font-size:.82rem; font-weight:500; z-index:999; transition:.3s; white-space:nowrap; }
+  .toast.success { background:var(--green); }
+  .toast.error { background:#ef4444; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  .spinner { width:30px; height:30px; border:3px solid #eee; border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 10px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .cal-loading { text-align:center; padding:50px 0; color:#aaa; font-size:.88rem; }
+
+  .hidden { display:none !important; }
+
+  @media(max-width:640px){
+    header{padding:16px 14px;} main{padding:20px 10px 50px;}
+    .form-grid{grid-template-columns:1fr;} .form-grid .full{grid-column:1;}
+    .day-cell{min-height:66px; padding:7px 4px 5px;} .day-num{font-size:.8rem;}
+    .player-chip{display:none;} .add-hint{display:none;}
+    .slot-row{grid-template-columns:repeat(2,1fr);}
+    .dow-row{grid-template-columns:repeat(7,1fr);}
+    .header-right .recurring-mgr-btn{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🎾 Court Scheduler</h1>
+    <p>Tennis &amp; Pickleball — Sign up, show up, play</p>
+  </div>
+  <div class="header-right">
+    <button class="recurring-mgr-btn" onclick="openRecurringMgr()">⟳ Recurring</button>
+    <div class="header-badge">Open Courts</div>
+  </div>
+</header>
+
+<main>
+  <div class="month-nav">
+    <button class="nav-btn" id="prevMonth">&#8592;</button>
+    <h2 id="monthTitle">Loading...</h2>
+    <button class="nav-btn" id="nextMonth">&#8594;</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-singles"></div> Singles</div>
+    <div class="legend-item"><div class="legend-dot dot-doubles"></div> Doubles</div>
+    <div class="legend-item"><div class="legend-dot dot-recurring"></div> Recurring</div>
+  </div>
+  <div class="cal-header">
+    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+  </div>
+  <div class="cal-grid" id="calGrid">
+    <div class="cal-loading"><div class="spinner"></div>Loading schedule...</div>
+  </div>
+</main>
+
+<!-- ── DAY MODAL ── -->
+<div class="overlay" id="overlay">
+<div class="modal" id="modal">
+  <div class="modal-header">
+    <h3 id="modalDateTitle">Date</h3>
+    <p id="modalDateSub">Who's playing — add yourself below</p>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="section-title">Who's Playing</div>
+    <div class="player-list" id="playerList"></div>
+
+    <div class="section-title">Count Me In</div>
+    <div class="form-grid">
+      <div>
+        <label>Your Name *</label>
+        <input type="text" id="inputName" placeholder="e.g. Alex Johnson" autocomplete="name" />
+      </div>
+      <div>
+        <label>Email (optional)</label>
+        <input type="email" id="inputEmail" placeholder="for coordination" autocomplete="email" />
+      </div>
+
+      <!-- Game type -->
+      <div class="full">
+        <label>Game Type *</label>
+        <div class="type-row">
+          <button class="type-btn singles active" data-type="singles">
+            <span class="ty-icon">🎾</span><span class="ty-label">Singles (1v1)</span>
+          </button>
+          <button class="type-btn doubles" data-type="doubles">
+            <span class="ty-icon">👥</span><span class="ty-label">Doubles (2v2)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Time type toggle -->
+      <div class="full">
+        <label>Availability</label>
+        <div class="toggle-row" style="margin-bottom:8px;">
+          <button class="toggle-btn active" data-ttype="slot">
+            <span class="tb-icon">🕐</span><span class="tb-label">Time of Day</span>
+          </button>
+          <button class="toggle-btn" data-ttype="range">
+            <span class="tb-icon">⏱</span><span class="tb-label">Specific Time</span>
+          </button>
+        </div>
+        <!-- Time of day slots -->
+        <div id="slotPicker">
+          <div class="slot-row">
+            <button class="slot-btn active" data-slot="morning"><span class="sl-icon">🌅</span><span class="sl-label">Morning</span></button>
+            <button class="slot-btn" data-slot="noon"><span class="sl-icon">☀️</span><span class="sl-label">Noon</span></button>
+            <button class="slot-btn" data-slot="afternoon"><span class="sl-icon">🌤</span><span class="sl-label">Afternoon</span></button>
+            <button class="slot-btn" data-slot="evening"><span class="sl-icon">🌆</span><span class="sl-label">Evening</span></button>
+          </div>
+        </div>
+        <!-- Time range -->
+        <div id="rangePicker" class="hidden">
+          <div class="time-range">
+            <div><label>From</label><input type="time" id="timeFrom" value="08:00" /></div>
+            <div class="sep">→</div>
+            <div><label>To</label><input type="time" id="timeTo" value="10:00" /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recurring -->
+      <div class="full">
+        <label>Recurring?</label>
+        <div class="recur-toggle" id="recurToggle" onclick="toggleRecurring()">
+          <div class="recur-check" id="recurCheck"></div>
+          <span class="recur-text">Make this a recurring availability</span>
+        </div>
+        <div class="recur-options" id="recurOptions">
+          <div class="recur-sub-title">Repeat</div>
+          <div class="recur-type-row">
+            <button class="recur-type-btn active" data-rtype="weekly"><span class="rt-icon">📅</span><span class="rt-label">Every Week</span></button>
+            <button class="recur-type-btn" data-rtype="monthly"><span class="rt-icon">🗓</span><span class="rt-label">Same Week Monthly</span></button>
+          </div>
+          <div class="recur-sub-title">Day of Week</div>
+          <div class="dow-row">
+            <button class="dow-btn" data-dow="0">Su</button>
+            <button class="dow-btn active" data-dow="1">Mo</button>
+            <button class="dow-btn" data-dow="2">Tu</button>
+            <button class="dow-btn" data-dow="3">We</button>
+            <button class="dow-btn" data-dow="4">Th</button>
+            <button class="dow-btn" data-dow="5">Fr</button>
+            <button class="dow-btn" data-dow="6">Sa</button>
+          </div>
+          <div id="weekPicker" class="hidden">
+            <div class="recur-sub-title" style="margin-top:10px;">Which Week</div>
+            <div class="week-row">
+              <button class="week-btn active" data-week="1">1st</button>
+              <button class="week-btn" data-week="2">2nd</button>
+              <button class="week-btn" data-week="3">3rd</button>
+              <button class="week-btn" data-week="4">4th</button>
+              <button class="week-btn" data-week="-1">Last</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="full">
+        <label>Note (optional)</label>
+        <textarea id="inputNote" placeholder="e.g. Beginner-friendly, prefer baseline rallying..."></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn">SIGN ME UP</button>
+  </div>
+</div>
+</div>
+
+<!-- ── RECURRING MANAGER MODAL ── -->
+<div class="overlay" id="recurMgrOverlay">
+<div class="modal" id="recurMgrModal">
+  <div class="modal-header" style="background:#5b21b6;">
+    <h3>Recurring Signups</h3>
+    <p>All standing court commitments</p>
+    <button class="modal-close" onclick="closeRecurringMgr()">✕</button>
+  </div>
+  <div class="recur-mgr-body">
+    <div id="recurMgrList"><div class="cal-loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let curYear = new Date().getFullYear();
+let curMonth = new Date().getMonth();
+let sessionCache = {};
+let activeDate = null;
+
+// Form state
+let selGameType = 'singles';
+let selTimeType = 'slot';
+let selSlot = 'morning';
+let isRecurring = false;
+let recurType = 'weekly';
+let recurDow = 1;
+let recurWeek = 1;
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WEEK_LABELS = {1:'1st',2:'2nd',3:'3rd',4:'4th','-1':'Last'};
+const SLOT_LABELS = {morning:'🌅 Morning',noon:'☀️ Noon',afternoon:'🌤 Afternoon',evening:'🌆 Evening'};
+
+function pad(n){ return String(n).padStart(2,'0'); }
+function padDate(y,m,d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
+function friendlyDate(ds){
+  const [y,m,d]=ds.split('-').map(Number);
+  return new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+}
+function formatTime(t){ // "08:00" -> "8:00 AM"
+  if(!t) return '';
+  const [h,m]=t.split(':').map(Number);
+  const ap=h>=12?'PM':'AM'; const h12=h%12||12;
+  return `${h12}:${pad(m)} ${ap}`;
+}
+function timeLabel(p){
+  if(p.timeType==='range' && p.timeFrom) return `${formatTime(p.timeFrom)} – ${formatTime(p.timeTo)}`;
+  if(p.timeType==='slot' && p.timeSlot) return SLOT_LABELS[p.timeSlot]||p.timeSlot;
+  return '';
+}
+function recurLabel(rule){
+  const dow = DAYS_FULL[rule.recurrence.dayOfWeek];
+  if(rule.recurrence.type==='weekly') return `Every ${dow}`;
+  const wk = WEEK_LABELS[rule.recurrence.week]||'';
+  return `${wk} ${dow} of each month`;
+}
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type}`; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function isToday(y,m,d){ const n=new Date(); return n.getFullYear()===y&&n.getMonth()===m&&n.getDate()===d; }
+function isPast(y,m,d){ const n=new Date(); n.setHours(0,0,0,0); return new Date(y,m,d)<n; }
+
+// ── API ──────────────────────────────────────────────
+async function fetchMonth(y,m){
+  const key=`${y}-${pad(m+1)}`;
+  const res=await fetch(`${API}/api/sessions?month=${key}`);
+  const sessions=await res.json();
+  sessionCache={};
+  sessions.forEach(s=>{ sessionCache[s.date]=s; });
+}
+async function apiSignup(date,body){
+  const res=await fetch(`${API}/api/sessions/${date}/signup`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error||'Failed');}
+  return res.json();
+}
+async function apiDeletePlayer(date,pid){
+  const res=await fetch(`${API}/api/sessions/${date}/signup/${pid}`,{method:'DELETE'});
+  if(!res.ok) throw new Error('Failed to remove');
+  return res.json();
+}
+async function apiAddRecurring(body){
+  const res=await fetch(`${API}/api/recurring`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error||'Failed');}
+  return res.json();
+}
+async function apiDeleteRecurring(id){
+  const res=await fetch(`${API}/api/recurring/${id}`,{method:'DELETE'});
+  if(!res.ok) throw new Error('Failed');
+  return res.json();
+}
+async function apiGetRecurring(){
+  const res=await fetch(`${API}/api/recurring`);
+  return res.json();
+}
+
+// ── CALENDAR ─────────────────────────────────────────
+async function renderCalendar(){
+  document.getElementById('monthTitle').textContent=`${MONTHS[curMonth]} ${curYear}`;
+  document.getElementById('calGrid').innerHTML='<div class="cal-loading"><div class="spinner"></div>Loading...</div>';
+  await fetchMonth(curYear,curMonth);
+  buildGrid();
+}
+function buildGrid(){
+  const firstDay=new Date(curYear,curMonth,1).getDay();
+  const days=new Date(curYear,curMonth+1,0).getDate();
+  let html='';
+  for(let i=0;i<firstDay;i++) html+='<div class="day-cell empty"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=padDate(curYear,curMonth,d);
+    const sess=sessionCache[ds]||{players:[],recurringPlayers:[]};
+    const allPlayers=[...(sess.players||[]),...(sess.recurringPlayers||[])];
+    const today=isToday(curYear,curMonth,d);
+    const past=isPast(curYear,curMonth,d);
+    let cls='day-cell'+(today?' today':'')+(past?' past':'')+(allPlayers.length?' has-players':'');
+    const MAX=2;
+    const chips=allPlayers.slice(0,MAX).map(p=>{
+      const chipCls=p.isRecurring?'chip-recurring':`chip-${p.gameType}`;
+      return `<div class="player-chip ${chipCls}">${escHtml(p.name.split(' ')[0])}</div>`;
+    }).join('');
+    const more=allPlayers.length>MAX?`<div class="more-label">+${allPlayers.length-MAX} more</div>`:'';
+    html+=`<div class="${cls}" data-date="${ds}" ${past?'':` onclick="openModal('${ds}')"`}>
+      <span class="day-num">${d}</span>
+      <div class="player-chips">${chips}${more}</div>
+      ${!past?'<span class="add-hint">+</span>':''}
+    </div>`;
+  }
+  document.getElementById('calGrid').innerHTML=html;
+}
+
+// ── DAY MODAL ────────────────────────────────────────
+function openModal(ds){
+  activeDate=ds;
+  document.getElementById('modalDateTitle').textContent=friendlyDate(ds);
+  renderPlayerList(ds);
+  resetForm();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  activeDate=null;
+}
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('overlay')) closeModal(); });
+
+function renderPlayerList(ds){
+  const sess=sessionCache[ds]||{players:[],recurringPlayers:[]};
+  const one=sess.players||[];
+  const rec=sess.recurringPlayers||[];
+  const pl=document.getElementById('playerList');
+  if(!one.length && !rec.length){
+    pl.innerHTML='<div class="no-players">No players yet — be first! 🎾</div>';
+    return;
+  }
+  const rowHtml=(p,isRec)=>`
+    <div class="player-row">
+      <div class="player-info">
+        <div class="player-name">${escHtml(p.name)}</div>
+        ${timeLabel(p)?`<div class="player-time">${timeLabel(p)}</div>`:''}
+        ${p.note?`<div class="player-note">${escHtml(p.note)}</div>`:''}
+        ${isRec?`<div class="player-recur">⟳ ${escHtml(p.recurrenceLabel||'Recurring')}</div>`:''}
+      </div>
+      <span class="badge badge-${p.gameType}">${p.gameType==='singles'?'Singles':'Doubles'}</span>
+      ${isRec
+        ? `<button class="del-btn" title="Remove recurring" onclick="handleDelRecurring('${p.recurrenceId}')">🗑</button>`
+        : `<button class="del-btn" title="Remove" onclick="handleDelPlayer('${ds}','${p._id}')">🗑</button>`
+      }
+    </div>`;
+  pl.innerHTML=one.map(p=>rowHtml(p,false)).join('')+rec.map(p=>rowHtml(p,true)).join('');
+}
+
+// ── FORM STATE ───────────────────────────────────────
+function resetForm(){
+  document.getElementById('inputName').value='';
+  document.getElementById('inputEmail').value='';
+  document.getElementById('inputNote').value='';
+  document.getElementById('timeFrom').value='08:00';
+  document.getElementById('timeTo').value='10:00';
+  setGameType('singles');
+  setTimeType('slot');
+  setSlot('morning');
+  if(isRecurring) toggleRecurring();
+  setRecurType('weekly');
+  setDow(1);
+  setWeek(1);
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('submitBtn').textContent='SIGN ME UP';
+}
+
+function setGameType(t){
+  selGameType=t;
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.type===t);
+  });
+}
+function setTimeType(t){
+  selTimeType=t;
+  document.querySelectorAll('[data-ttype]').forEach(b=>b.classList.toggle('active',b.dataset.ttype===t));
+  document.getElementById('slotPicker').classList.toggle('hidden',t!=='slot');
+  document.getElementById('rangePicker').classList.toggle('hidden',t!=='range');
+}
+function setSlot(s){
+  selSlot=s;
+  document.querySelectorAll('.slot-btn').forEach(b=>b.classList.toggle('active',b.dataset.slot===s));
+}
+function toggleRecurring(){
+  isRecurring=!isRecurring;
+  document.getElementById('recurToggle').classList.toggle('on',isRecurring);
+  document.getElementById('recurCheck').textContent=isRecurring?'✓':'';
+  document.getElementById('recurOptions').classList.toggle('visible',isRecurring);
+  document.getElementById('submitBtn').textContent=isRecurring?'SAVE RECURRING SIGNUP':'SIGN ME UP';
+}
+function setRecurType(t){
+  recurType=t;
+  document.querySelectorAll('.recur-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.rtype===t));
+  document.getElementById('weekPicker').classList.toggle('hidden',t!=='monthly');
+}
+function setDow(d){
+  recurDow=d;
+  document.querySelectorAll('.dow-btn').forEach(b=>b.classList.toggle('active',+b.dataset.dow===d));
+}
+function setWeek(w){
+  recurWeek=w;
+  document.querySelectorAll('.week-btn').forEach(b=>b.classList.toggle('active',+b.dataset.week===w));
+}
+
+// Wire up all toggle buttons
+document.querySelectorAll('.type-btn').forEach(b=>b.addEventListener('click',()=>setGameType(b.dataset.type)));
+document.querySelectorAll('[data-ttype]').forEach(b=>b.addEventListener('click',()=>setTimeType(b.dataset.ttype)));
+document.querySelectorAll('.slot-btn').forEach(b=>b.addEventListener('click',()=>setSlot(b.dataset.slot)));
+document.querySelectorAll('.recur-type-btn').forEach(b=>b.addEventListener('click',()=>setRecurType(b.dataset.rtype)));
+document.querySelectorAll('.dow-btn').forEach(b=>b.addEventListener('click',()=>setDow(+b.dataset.dow)));
+document.querySelectorAll('.week-btn').forEach(b=>b.addEventListener('click',()=>setWeek(+b.dataset.week)));
+
+// ── SUBMIT ───────────────────────────────────────────
+document.getElementById('submitBtn').addEventListener('click', async ()=>{
+  const name=document.getElementById('inputName').value.trim();
+  if(!name){showToast('Please enter your name','error');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='SAVING...';
+
+  const body={
+    name, email:document.getElementById('inputEmail').value.trim(),
+    gameType:selGameType,
+    timeType:selTimeType,
+    timeFrom:selTimeType==='range'?document.getElementById('timeFrom').value:'',
+    timeTo:selTimeType==='range'?document.getElementById('timeTo').value:'',
+    timeSlot:selTimeType==='slot'?selSlot:'',
+    note:document.getElementById('inputNote').value.trim()
+  };
+
+  try {
+    if(isRecurring){
+      const rlabel=recurType==='weekly'
+        ? `Every ${DAYS_FULL[recurDow]}`
+        : `${WEEK_LABELS[recurWeek]} ${DAYS_FULL[recurDow]} of month`;
+      const result=await apiAddRecurring({
+        ...body,
+        recurrence:{type:recurType, dayOfWeek:recurDow, week:recurWeek},
+        recurrenceLabel:rlabel
+      });
+      showToast(`⟳ Recurring saved: ${rlabel}`);
+      // Refresh current month to show new recurring
+      await fetchMonth(curYear,curMonth);
+      buildGrid();
+      if(activeDate) renderPlayerList(activeDate);
+    } else {
+      const result=await apiSignup(activeDate,body);
+      sessionCache[activeDate]=result;
+      buildGrid();
+      renderPlayerList(activeDate);
+      showToast(`✅ You're on for ${friendlyDate(activeDate)}!`);
+    }
+    document.getElementById('inputName').value='';
+    document.getElementById('inputEmail').value='';
+    document.getElementById('inputNote').value='';
+  } catch(err){
+    showToast(err.message,'error');
+  } finally {
+    btn.disabled=false;
+    btn.textContent=isRecurring?'SAVE RECURRING SIGNUP':'SIGN ME UP';
+  }
+});
+
+async function handleDelPlayer(ds,pid){
+  if(!confirm('Remove this signup?')) return;
+  try {
+    const result=await apiDeletePlayer(ds,pid);
+    sessionCache[ds]=result;
+    buildGrid();
+    renderPlayerList(ds);
+    showToast('Signup removed.');
+  } catch(e){ showToast('Could not remove.','error'); }
+}
+async function handleDelRecurring(rid){
+  if(!confirm('Remove this recurring signup? It will disappear from all future dates.')) return;
+  try {
+    await apiDeleteRecurring(rid);
+    showToast('Recurring signup removed.');
+    await fetchMonth(curYear,curMonth);
+    buildGrid();
+    if(activeDate) renderPlayerList(activeDate);
+  } catch(e){ showToast('Could not remove.','error'); }
+}
+
+// ── RECURRING MANAGER ────────────────────────────────
+async function openRecurringMgr(){
+  document.getElementById('recurMgrOverlay').classList.add('open');
+  const list=document.getElementById('recurMgrList');
+  list.innerHTML='<div class="cal-loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const rules=await apiGetRecurring();
+    if(!rules.length){ list.innerHTML='<p style="color:#aaa;font-style:italic;font-size:.85rem;">No recurring signups yet.</p>'; return; }
+    list.innerHTML=rules.map(r=>`
+      <div class="recur-rule-row">
+        <div class="recur-rule-info">
+          <div class="recur-rule-name">${escHtml(r.name)}</div>
+          <div class="recur-rule-detail">${recurLabel(r)} · ${r.gameType==='singles'?'Singles':'Doubles'} · ${timeLabel(r)||'Any time'}</div>
+          ${r.note?`<div class="player-note">${escHtml(r.note)}</div>`:''}
+        </div>
+        <button class="del-btn" onclick="handleDelRecurringMgr('${r._id}',this)">🗑</button>
+      </div>
+    `).join('');
+  } catch(e){ list.innerHTML='<p style="color:#ef4444;">Failed to load.</p>'; }
+}
+function closeRecurringMgr(){
+  document.getElementById('recurMgrOverlay').classList.remove('open');
+}
+document.getElementById('recurMgrOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('recurMgrOverlay')) closeRecurringMgr(); });
+
+async function handleDelRecurringMgr(id, btn){
+  if(!confirm('Remove this recurring signup from all future dates?')) return;
+  try {
+    await apiDeleteRecurring(id);
+    btn.closest('.recur-rule-row').remove();
+    await fetchMonth(curYear,curMonth);
+    buildGrid();
+    showToast('Recurring signup removed.');
+  } catch(e){ showToast('Could not remove.','error'); }
+}
+
+// ── NAV ──────────────────────────────────────────────
+document.getElementById('prevMonth').addEventListener('click',()=>{
+  curMonth--; if(curMonth<0){curMonth=11;curYear--;} renderCalendar();
+});
+document.getElementById('nextMonth').addEventListener('click',()=>{
+  curMonth++; if(curMonth>11){curMonth=0;curYear++;} renderCalendar();
+});
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+renderCalendar();
+</script>
+</body>
+</html>
