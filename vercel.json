@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/api/sessions/:date/signup/:playerId", "destination": "/api/sessions/[date]/signup/[playerId]" },
+    { "source": "/api/sessions/:date/signup",           "destination": "/api/sessions/[date]/signup/index" },
+    { "source": "/api/sessions/:date",                  "destination": "/api/sessions/[date]/index" },
+    { "source": "/api/sessions",                        "destination": "/api/sessions/index" },
+    { "source": "/api/recurring/:id",                   "destination": "/api/recurring/[id]" },
+    { "source": "/api/recurring",                       "destination": "/api/recurring/index" },
+    { "source": "/((?!api/).*)",                        "destination": "/index.html" }
+  ]
+}
