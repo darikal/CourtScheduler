@@ -8,529 +8,206 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --court-green: #2d5a27;
-    --court-mid: #3d7a35;
-    --court-light: #5a9e50;
-    --lime: #b5f03d;
-    --lime-dark: #8fbe28;
-    --cream: #f5f0e8;
-    --sand: #e8dfc8;
-    --dark: #1a1a1a;
-    --white: #ffffff;
-    --line-white: rgba(255,255,255,0.85);
-    --shadow: 0 8px 40px rgba(0,0,0,0.18);
-    --radius: 12px;
+    --green: #2d5a27; --mid: #3d7a35; --light: #5a9e50;
+    --lime: #b5f03d; --cream: #f5f0e8; --sand: #e8dfc8;
+    --dark: #1a1a1a; --white: #ffffff;
+    --blue: #3b82f6; --blue-bg: #dbeafe; --blue-text: #1d4ed8;
+    --amber: #f59e0b; --amber-bg: #fef3c7; --amber-text: #b45309;
+    --purple: #8b5cf6; --purple-bg: #ede9fe; --purple-text: #6d28d9;
+    --radius: 12px; --shadow: 0 8px 40px rgba(0,0,0,0.18);
   }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--dark); min-height:100vh; overflow-x:hidden; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--dark);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* HEADER */
   header {
-    background: var(--court-green);
-    position: relative;
-    overflow: hidden;
-    padding: 28px 40px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background:var(--green); padding:22px 40px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:relative; overflow:hidden;
   }
   header::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 60px,
-      rgba(255,255,255,0.04) 60px,
-      rgba(255,255,255,0.04) 62px
-    );
-    pointer-events: none;
+    content:''; position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.04) 60px,rgba(255,255,255,.04) 62px);
+    pointer-events:none;
   }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 100%;
-    background: var(--line-white);
-    opacity: 0.2;
+  .header-left h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,5vw,3rem); color:var(--lime); letter-spacing:2px; line-height:1; }
+  .header-left p { color:rgba(255,255,255,.6); font-size:.82rem; margin-top:3px; }
+  .header-right { display:flex; gap:10px; align-items:center; }
+  .header-badge { background:var(--lime); color:var(--green); font-family:'Bebas Neue',sans-serif; font-size:.85rem; letter-spacing:1.5px; padding:5px 14px; border-radius:100px; }
+  .recurring-mgr-btn {
+    background:rgba(255,255,255,.12); color:white; border:1px solid rgba(255,255,255,.25);
+    font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:600; padding:6px 14px;
+    border-radius:100px; cursor:pointer; transition:.15s; letter-spacing:.3px;
   }
-  .header-left h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    color: var(--lime);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-  .header-left p {
-    color: rgba(255,255,255,0.65);
-    font-size: 0.85rem;
-    font-weight: 300;
-    letter-spacing: 0.5px;
-    margin-top: 4px;
-  }
-  .header-badge {
-    background: var(--lime);
-    color: var(--court-green);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 1.5px;
-    padding: 6px 16px;
-    border-radius: 100px;
-  }
+  .recurring-mgr-btn:hover { background:rgba(255,255,255,.2); }
 
-  /* MAIN LAYOUT */
-  main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 20px 60px;
-  }
+  main { max-width:1100px; margin:0 auto; padding:36px 20px 60px; }
 
-  /* MONTH NAV */
-  .month-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 28px;
-  }
-  .month-nav h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    letter-spacing: 2px;
-    color: var(--court-green);
-  }
-  .nav-btn {
-    background: var(--court-green);
-    color: var(--lime);
-    border: none;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .nav-btn:hover { background: var(--court-mid); transform: scale(1.05); }
-  .nav-btn:active { transform: scale(0.96); }
+  .month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .month-nav h2 { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; color:var(--green); }
+  .nav-btn { background:var(--green); color:var(--lime); border:none; width:42px; height:42px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .nav-btn:hover { background:var(--mid); transform:scale(1.05); }
 
-  /* LEGEND */
-  .legend {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 0.8rem;
-    color: #555;
-    font-weight: 500;
-  }
-  .legend-dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-  }
-  .dot-singles { background: #3b82f6; }
-  .dot-doubles { background: #f59e0b; }
-  .dot-mixed { background: linear-gradient(135deg, #3b82f6 50%, #f59e0b 50%); }
-  .dot-empty { background: #ddd; border: 1.5px dashed #aaa; }
+  .legend { display:flex; gap:18px; margin-bottom:18px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:.78rem; color:#555; font-weight:500; }
+  .legend-dot { width:11px; height:11px; border-radius:50%; }
+  .dot-singles { background:var(--blue); }
+  .dot-doubles { background:var(--amber); }
+  .dot-recurring { background:var(--purple); }
 
-  /* CALENDAR GRID */
-  .cal-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  .cal-header span {
-    text-align: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--court-green);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .cal-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-  }
+  .cal-header { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:6px; }
+  .cal-header span { text-align:center; font-size:.72rem; font-weight:700; color:var(--green); letter-spacing:1px; text-transform:uppercase; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
 
-  /* DAY CELL */
   .day-cell {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 10px 8px 8px;
-    min-height: 90px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.15s, transform 0.1s, box-shadow 0.15s;
-    position: relative;
-    overflow: hidden;
+    background:var(--white); border-radius:10px; padding:9px 7px 7px;
+    min-height:88px; cursor:pointer; border:2px solid transparent;
+    transition:border-color .15s, transform .1s, box-shadow .15s; position:relative; overflow:hidden;
   }
-  .day-cell:hover:not(.past):not(.empty) {
-    border-color: var(--court-mid);
-    box-shadow: 0 4px 20px rgba(45,90,39,0.15);
-    transform: translateY(-2px);
-  }
-  .day-cell.empty {
-    background: transparent;
-    cursor: default;
-    border: none;
-  }
-  .day-cell.past {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-  .day-cell.today {
-    border-color: var(--lime);
-    background: linear-gradient(135deg, #fff 70%, #f0fae0);
-  }
-  .day-cell.has-players {
-    border-color: rgba(45,90,39,0.2);
-  }
+  .day-cell:hover:not(.past):not(.empty) { border-color:var(--mid); box-shadow:0 4px 18px rgba(45,90,39,.14); transform:translateY(-2px); }
+  .day-cell.empty { background:transparent; cursor:default; border:none; }
+  .day-cell.past { opacity:.4; cursor:not-allowed; }
+  .day-cell.today { border-color:var(--lime); background:linear-gradient(135deg,#fff 70%,#f0fae0); }
+  .day-num { font-weight:700; font-size:.9rem; color:var(--dark); display:block; margin-bottom:5px; }
+  .day-cell.today .day-num { color:var(--green); }
+  .player-chips { display:flex; flex-direction:column; gap:2px; }
+  .player-chip { font-size:.64rem; font-weight:500; padding:2px 6px; border-radius:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chip-singles { background:var(--blue-bg); color:var(--blue-text); }
+  .chip-doubles { background:var(--amber-bg); color:var(--amber-text); }
+  .chip-recurring { background:var(--purple-bg); color:var(--purple-text); }
+  .more-label { font-size:.62rem; color:#999; margin-top:1px; padding-left:2px; }
+  .add-hint { position:absolute; bottom:5px; right:7px; font-size:1.1rem; color:var(--mid); opacity:0; transition:.15s; }
+  .day-cell:hover:not(.past):not(.empty) .add-hint { opacity:.45; }
 
-  .day-num {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--dark);
-    display: block;
-    margin-bottom: 6px;
-  }
-  .day-cell.today .day-num {
-    color: var(--court-green);
-    position: relative;
-  }
-  .day-cell.today .day-num::after {
-    content: '';
-    position: absolute;
-    bottom: -2px; left: 0;
-    width: 100%; height: 2px;
-    background: var(--lime);
-    border-radius: 2px;
-  }
+  /* ── OVERLAY / MODAL ── */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.52); z-index:100; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto; backdrop-filter:blur(3px); }
+  .overlay.open { display:flex; }
+  .modal { background:var(--white); border-radius:20px; width:100%; max-width:540px; overflow:hidden; box-shadow:var(--shadow); animation:slideUp .2s ease-out; margin:auto; }
+  @keyframes slideUp { from{transform:translateY(28px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-header { background:var(--green); padding:20px 26px 16px; position:relative; }
+  .modal-header h3 { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--lime); letter-spacing:1.5px; }
+  .modal-header p { color:rgba(255,255,255,.55); font-size:.8rem; margin-top:2px; }
+  .modal-close { position:absolute; top:14px; right:16px; background:rgba(255,255,255,.12); border:none; color:white; width:30px; height:30px; border-radius:50%; font-size:.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .modal-close:hover { background:rgba(255,255,255,.22); }
+  .modal-body { padding:22px 26px 26px; }
 
-  .player-chips {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin-top: 4px;
-  }
-  .player-chip {
-    font-size: 0.68rem;
-    font-weight: 500;
-    padding: 2px 6px;
-    border-radius: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-  .chip-singles { background: #dbeafe; color: #1d4ed8; }
-  .chip-doubles { background: #fef3c7; color: #b45309; }
+  /* Players */
+  .section-title { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999; margin-bottom:10px; }
+  .player-list { display:flex; flex-direction:column; gap:7px; margin-bottom:22px; }
+  .player-row { display:flex; align-items:flex-start; gap:10px; background:var(--cream); border-radius:10px; padding:10px 12px; }
+  .player-info { flex:1; min-width:0; }
+  .player-name { font-weight:600; font-size:.88rem; }
+  .player-time { font-size:.74rem; color:#666; margin-top:2px; }
+  .player-note { font-size:.72rem; color:#999; margin-top:1px; font-style:italic; }
+  .player-recur { font-size:.68rem; color:var(--purple-text); background:var(--purple-bg); padding:1px 7px; border-radius:100px; display:inline-block; margin-top:3px; }
+  .badge { font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:100px; white-space:nowrap; flex-shrink:0; margin-top:1px; }
+  .badge-singles { background:var(--blue-bg); color:var(--blue-text); }
+  .badge-doubles { background:var(--amber-bg); color:var(--amber-text); }
+  .del-btn { background:none; border:none; color:#ccc; cursor:pointer; font-size:.95rem; padding:2px; border-radius:4px; transition:.1s; flex-shrink:0; margin-top:1px; }
+  .del-btn:hover { color:#ef4444; }
+  .no-players { text-align:center; padding:14px; color:#bbb; font-size:.82rem; font-style:italic; background:var(--cream); border-radius:10px; border:2px dashed #ddd; margin-bottom:22px; }
 
-  .more-label {
-    font-size: 0.65rem;
-    color: #888;
-    margin-top: 2px;
-    padding-left: 2px;
+  /* Form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .form-grid .full { grid-column:1/-1; }
+  label { display:block; font-size:.76rem; font-weight:600; color:#555; margin-bottom:4px; letter-spacing:.3px; }
+  input[type=text], input[type=email], input[type=time], textarea, select {
+    width:100%; padding:9px 11px; border:1.5px solid #e0e0e0; border-radius:8px;
+    font-family:'DM Sans',sans-serif; font-size:.88rem; color:var(--dark); background:var(--cream);
+    transition:.15s; outline:none; -webkit-appearance:none; appearance:none;
   }
+  input:focus, textarea:focus, select:focus { border-color:var(--mid); background:white; }
+  textarea { resize:none; height:60px; }
 
-  .add-hint {
-    position: absolute;
-    bottom: 6px;
-    right: 8px;
-    font-size: 1.2rem;
-    color: var(--court-mid);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .day-cell:hover:not(.past):not(.empty) .add-hint { opacity: 0.5; }
+  /* Toggle row */
+  .toggle-row { display:flex; gap:6px; }
+  .toggle-btn { flex:1; background:var(--cream); border:2px solid #e0e0e0; border-radius:8px; padding:8px 6px; cursor:pointer; text-align:center; transition:.15s; }
+  .toggle-btn .tb-icon { font-size:1.1rem; display:block; margin-bottom:2px; }
+  .toggle-btn .tb-label { font-size:.72rem; font-weight:600; color:#666; }
+  .toggle-btn.active { border-color:var(--green); background:#edf7e9; }
+  .toggle-btn.active .tb-label { color:var(--green); }
 
-  /* MODAL OVERLAY */
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    backdrop-filter: blur(3px);
-  }
-  .overlay.open { display: flex; }
+  /* Time slots */
+  .slot-row { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .slot-btn { background:var(--cream); border:2px solid #e0e0e0; border-radius:8px; padding:8px 4px; cursor:pointer; text-align:center; transition:.15s; }
+  .slot-btn .sl-icon { font-size:1.1rem; display:block; margin-bottom:2px; }
+  .slot-btn .sl-label { font-size:.68rem; font-weight:600; color:#666; }
+  .slot-btn.active { border-color:var(--green); background:#edf7e9; }
+  .slot-btn.active .sl-label { color:var(--green); }
 
-  .modal {
-    background: var(--white);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 520px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    animation: slideUp 0.22s ease-out;
-  }
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
+  /* Time range */
+  .time-range { display:grid; grid-template-columns:1fr auto 1fr; align-items:end; gap:8px; }
+  .time-range .sep { padding-bottom:9px; color:#aaa; font-size:.8rem; text-align:center; }
 
-  .modal-header {
-    background: var(--court-green);
-    padding: 22px 28px 18px;
-    position: relative;
-  }
-  .modal-header h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
-    color: var(--lime);
-    letter-spacing: 1.5px;
-  }
-  .modal-header p {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.82rem;
-    margin-top: 2px;
-  }
-  .modal-close {
-    position: absolute;
-    top: 16px; right: 18px;
-    background: rgba(255,255,255,0.12);
-    border: none;
-    color: white;
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s;
-  }
-  .modal-close:hover { background: rgba(255,255,255,0.22); }
+  /* Game type */
+  .type-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .type-btn { background:var(--cream); border:2px solid #e0e0e0; border-radius:10px; padding:9px 6px; cursor:pointer; text-align:center; transition:.15s; }
+  .type-btn .ty-icon { font-size:1.2rem; display:block; margin-bottom:3px; }
+  .type-btn .ty-label { font-size:.76rem; font-weight:600; color:#555; }
+  .type-btn.active.singles { border-color:var(--blue); background:#eff6ff; }
+  .type-btn.active.singles .ty-label { color:var(--blue-text); }
+  .type-btn.active.doubles { border-color:var(--amber); background:#fffbeb; }
+  .type-btn.active.doubles .ty-label { color:var(--amber-text); }
 
-  .modal-body { padding: 24px 28px 28px; }
+  /* Recurring */
+  .recur-toggle { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--cream); border-radius:10px; cursor:pointer; border:2px solid #e0e0e0; transition:.15s; user-select:none; }
+  .recur-toggle.on { border-color:var(--purple); background:var(--purple-bg); }
+  .recur-toggle input[type=checkbox] { display:none; }
+  .recur-check { width:18px; height:18px; border:2px solid #ccc; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:.7rem; flex-shrink:0; transition:.15s; }
+  .recur-toggle.on .recur-check { background:var(--purple); border-color:var(--purple); color:white; }
+  .recur-text { font-size:.82rem; font-weight:600; color:#555; }
+  .recur-toggle.on .recur-text { color:var(--purple-text); }
 
-  /* PLAYER LIST IN MODAL */
-  .players-section { margin-bottom: 24px; }
-  .players-section h4 {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #888;
-    margin-bottom: 10px;
-  }
-  .player-list { display: flex; flex-direction: column; gap: 8px; }
-  .player-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--cream);
-    border-radius: 10px;
-    padding: 10px 14px;
-    gap: 10px;
-  }
-  .player-info { flex: 1; min-width: 0; }
-  .player-name {
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .player-meta {
-    font-size: 0.75rem;
-    color: #888;
-    margin-top: 1px;
-  }
-  .badge {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 100px;
-    white-space: nowrap;
-    letter-spacing: 0.3px;
-    flex-shrink: 0;
-  }
-  .badge-singles { background: #dbeafe; color: #1d4ed8; }
-  .badge-doubles { background: #fef3c7; color: #b45309; }
-  .delete-btn {
-    background: none;
-    border: none;
-    color: #ccc;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 2px 4px;
-    border-radius: 4px;
-    transition: color 0.1s;
-    flex-shrink: 0;
-  }
-  .delete-btn:hover { color: #ef4444; }
-  .no-players {
-    text-align: center;
-    padding: 16px;
-    color: #aaa;
-    font-size: 0.85rem;
-    font-style: italic;
-    background: var(--cream);
-    border-radius: 10px;
-    border: 2px dashed #ddd;
-  }
+  .recur-options { background:var(--purple-bg); border:2px solid #ddd6fe; border-radius:10px; padding:14px; display:none; margin-top:6px; }
+  .recur-options.visible { display:block; }
+  .recur-sub-title { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--purple-text); margin-bottom:8px; }
 
-  /* SIGNUP FORM */
-  .form-section h4 {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #888;
-    margin-bottom: 14px;
-  }
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .form-grid .full { grid-column: 1 / -1; }
-  label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 5px;
-    letter-spacing: 0.3px;
-  }
-  input[type="text"], input[type="email"], textarea, select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    color: var(--dark);
-    background: var(--cream);
-    transition: border-color 0.15s;
-    outline: none;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--court-mid);
-    background: white;
-  }
-  textarea { resize: none; height: 68px; }
+  .recur-type-row { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px; }
+  .recur-type-btn { background:white; border:2px solid #ddd6fe; border-radius:8px; padding:7px 6px; cursor:pointer; text-align:center; transition:.15s; }
+  .recur-type-btn .rt-icon { font-size:1rem; display:block; margin-bottom:2px; }
+  .recur-type-btn .rt-label { font-size:.7rem; font-weight:600; color:var(--purple-text); }
+  .recur-type-btn.active { border-color:var(--purple); background:white; box-shadow:0 0 0 2px var(--purple); }
 
-  /* GAME TYPE TOGGLE */
-  .game-type-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .type-btn {
-    background: var(--cream);
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 10px 8px;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.15s;
-  }
-  .type-btn .type-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-  .type-btn .type-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #555;
-  }
-  .type-btn.selected.singles {
-    border-color: #3b82f6;
-    background: #eff6ff;
-  }
-  .type-btn.selected.singles .type-label { color: #1d4ed8; }
-  .type-btn.selected.doubles {
-    border-color: #f59e0b;
-    background: #fffbeb;
-  }
-  .type-btn.selected.doubles .type-label { color: #b45309; }
+  .dow-row { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .dow-btn { background:white; border:2px solid #ddd6fe; border-radius:6px; padding:6px 2px; cursor:pointer; text-align:center; font-size:.66rem; font-weight:700; color:var(--purple-text); transition:.15s; }
+  .dow-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
 
-  .submit-btn {
-    width: 100%;
-    background: var(--court-green);
-    color: var(--lime);
-    border: none;
-    border-radius: 10px;
-    padding: 13px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 1.5px;
-    cursor: pointer;
-    margin-top: 14px;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .submit-btn:hover { background: var(--court-mid); transform: translateY(-1px); }
-  .submit-btn:active { transform: translateY(0); }
-  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .week-row { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:10px; }
+  .week-btn { background:white; border:2px solid #ddd6fe; border-radius:6px; padding:6px 2px; cursor:pointer; text-align:center; font-size:.66rem; font-weight:700; color:var(--purple-text); transition:.15s; }
+  .week-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--dark);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 100px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    z-index: 999;
-    transition: transform 0.3s ease;
-    white-space: nowrap;
-  }
-  .toast.success { background: var(--court-green); }
-  .toast.error { background: #ef4444; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+  .divider { height:1px; background:#eee; margin:18px 0; }
 
-  /* LOADING */
-  .cal-loading {
-    text-align: center;
-    padding: 60px 0;
-    color: #aaa;
-    font-size: 0.9rem;
-    letter-spacing: 0.5px;
-  }
-  .spinner {
-    width: 32px; height: 32px;
-    border: 3px solid #eee;
-    border-top-color: var(--court-green);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin: 0 auto 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .submit-btn { width:100%; background:var(--green); color:var(--lime); border:none; border-radius:10px; padding:12px; font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:1.5px; cursor:pointer; margin-top:14px; transition:.15s; }
+  .submit-btn:hover { background:var(--mid); transform:translateY(-1px); }
+  .submit-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
-  @media (max-width: 640px) {
-    header { padding: 18px 16px; }
-    main { padding: 24px 12px 50px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-grid .full { grid-column: 1; }
-    .day-cell { min-height: 70px; padding: 8px 5px 6px; }
-    .day-num { font-size: 0.82rem; }
-    .player-chip { display: none; }
-    .add-hint { display: none; }
+  /* Recurring manager modal */
+  .recur-mgr-body { padding:22px 26px 26px; }
+  .recur-rule-row { display:flex; align-items:flex-start; gap:10px; background:var(--cream); border-radius:10px; padding:11px 13px; margin-bottom:8px; }
+  .recur-rule-info { flex:1; min-width:0; }
+  .recur-rule-name { font-weight:600; font-size:.88rem; }
+  .recur-rule-detail { font-size:.74rem; color:#777; margin-top:2px; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--dark); color:white; padding:11px 22px; border-radius:100px; font-size:.82rem; font-weight:500; z-index:999; transition:.3s; white-space:nowrap; }
+  .toast.success { background:var(--green); }
+  .toast.error { background:#ef4444; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  .spinner { width:30px; height:30px; border:3px solid #eee; border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 10px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .cal-loading { text-align:center; padding:50px 0; color:#aaa; font-size:.88rem; }
+
+  .hidden { display:none !important; }
+
+  @media(max-width:640px){
+    header{padding:16px 14px;} main{padding:20px 10px 50px;}
+    .form-grid{grid-template-columns:1fr;} .form-grid .full{grid-column:1;}
+    .day-cell{min-height:66px; padding:7px 4px 5px;} .day-num{font-size:.8rem;}
+    .player-chip{display:none;} .add-hint{display:none;}
+    .slot-row{grid-template-columns:repeat(2,1fr);}
+    .dow-row{grid-template-columns:repeat(7,1fr);}
+    .header-right .recurring-mgr-btn{display:none;}
   }
 </style>
 </head>
@@ -541,7 +218,10 @@
     <h1>🎾 Court Scheduler</h1>
     <p>Tennis &amp; Pickleball — Sign up, show up, play</p>
   </div>
-  <div class="header-badge">Open Courts</div>
+  <div class="header-right">
+    <button class="recurring-mgr-btn" onclick="openRecurringMgr()">⟳ Recurring</button>
+    <div class="header-badge">Open Courts</div>
+  </div>
 </header>
 
 <main>
@@ -550,302 +230,490 @@
     <h2 id="monthTitle">Loading...</h2>
     <button class="nav-btn" id="nextMonth">&#8594;</button>
   </div>
-
   <div class="legend">
     <div class="legend-item"><div class="legend-dot dot-singles"></div> Singles</div>
     <div class="legend-item"><div class="legend-dot dot-doubles"></div> Doubles</div>
-    <div class="legend-item"><div class="legend-dot dot-empty"></div> No players yet — be first!</div>
+    <div class="legend-item"><div class="legend-dot dot-recurring"></div> Recurring</div>
   </div>
-
   <div class="cal-header">
-    <span>Sun</span><span>Mon</span><span>Tue</span>
-    <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
   </div>
   <div class="cal-grid" id="calGrid">
     <div class="cal-loading"><div class="spinner"></div>Loading schedule...</div>
   </div>
 </main>
 
-<!-- MODAL -->
+<!-- ── DAY MODAL ── -->
 <div class="overlay" id="overlay">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <h3 id="modalDateTitle">Date</h3>
-      <p id="modalDateSub">Click a name to remove yourself</p>
-      <button class="modal-close" id="modalClose">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="players-section">
-        <h4>Who's Playing</h4>
-        <div class="player-list" id="playerList"></div>
+<div class="modal" id="modal">
+  <div class="modal-header">
+    <h3 id="modalDateTitle">Date</h3>
+    <p id="modalDateSub">Who's playing — add yourself below</p>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="section-title">Who's Playing</div>
+    <div class="player-list" id="playerList"></div>
+
+    <div class="section-title">Count Me In</div>
+    <div class="form-grid">
+      <div>
+        <label>Your Name *</label>
+        <input type="text" id="inputName" placeholder="e.g. Alex Johnson" autocomplete="name" />
       </div>
-      <div class="form-section">
-        <h4>Count Me In</h4>
-        <div class="form-grid">
-          <div>
-            <label for="inputName">Your Name *</label>
-            <input type="text" id="inputName" placeholder="e.g. Alex Johnson" autocomplete="name" />
-          </div>
-          <div>
-            <label for="inputEmail">Email (optional)</label>
-            <input type="email" id="inputEmail" placeholder="for reminders" autocomplete="email" />
-          </div>
-          <div class="full">
-            <label>Game Type *</label>
-            <div class="game-type-group">
-              <button class="type-btn singles selected" data-type="singles">
-                <span class="type-icon">🎾</span>
-                <span class="type-label">Singles (1v1)</span>
-              </button>
-              <button class="type-btn doubles" data-type="doubles">
-                <span class="type-icon">👥</span>
-                <span class="type-label">Doubles (2v2)</span>
-              </button>
-            </div>
-          </div>
-          <div class="full">
-            <label for="inputNote">Note (optional)</label>
-            <textarea id="inputNote" placeholder="e.g. Prefer morning, beginner-friendly..."></textarea>
+      <div>
+        <label>Email (optional)</label>
+        <input type="email" id="inputEmail" placeholder="for coordination" autocomplete="email" />
+      </div>
+
+      <!-- Game type -->
+      <div class="full">
+        <label>Game Type *</label>
+        <div class="type-row">
+          <button class="type-btn singles active" data-type="singles">
+            <span class="ty-icon">🎾</span><span class="ty-label">Singles (1v1)</span>
+          </button>
+          <button class="type-btn doubles" data-type="doubles">
+            <span class="ty-icon">👥</span><span class="ty-label">Doubles (2v2)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Time type toggle -->
+      <div class="full">
+        <label>Availability</label>
+        <div class="toggle-row" style="margin-bottom:8px;">
+          <button class="toggle-btn active" data-ttype="slot">
+            <span class="tb-icon">🕐</span><span class="tb-label">Time of Day</span>
+          </button>
+          <button class="toggle-btn" data-ttype="range">
+            <span class="tb-icon">⏱</span><span class="tb-label">Specific Time</span>
+          </button>
+        </div>
+        <!-- Time of day slots -->
+        <div id="slotPicker">
+          <div class="slot-row">
+            <button class="slot-btn active" data-slot="morning"><span class="sl-icon">🌅</span><span class="sl-label">Morning</span></button>
+            <button class="slot-btn" data-slot="noon"><span class="sl-icon">☀️</span><span class="sl-label">Noon</span></button>
+            <button class="slot-btn" data-slot="afternoon"><span class="sl-icon">🌤</span><span class="sl-label">Afternoon</span></button>
+            <button class="slot-btn" data-slot="evening"><span class="sl-icon">🌆</span><span class="sl-label">Evening</span></button>
           </div>
         </div>
-        <button class="submit-btn" id="submitBtn">SIGN ME UP</button>
+        <!-- Time range -->
+        <div id="rangePicker" class="hidden">
+          <div class="time-range">
+            <div><label>From</label><input type="time" id="timeFrom" value="08:00" /></div>
+            <div class="sep">→</div>
+            <div><label>To</label><input type="time" id="timeTo" value="10:00" /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recurring -->
+      <div class="full">
+        <label>Recurring?</label>
+        <div class="recur-toggle" id="recurToggle" onclick="toggleRecurring()">
+          <div class="recur-check" id="recurCheck"></div>
+          <span class="recur-text">Make this a recurring availability</span>
+        </div>
+        <div class="recur-options" id="recurOptions">
+          <div class="recur-sub-title">Repeat</div>
+          <div class="recur-type-row">
+            <button class="recur-type-btn active" data-rtype="weekly"><span class="rt-icon">📅</span><span class="rt-label">Every Week</span></button>
+            <button class="recur-type-btn" data-rtype="monthly"><span class="rt-icon">🗓</span><span class="rt-label">Same Week Monthly</span></button>
+          </div>
+          <div class="recur-sub-title">Day of Week</div>
+          <div class="dow-row">
+            <button class="dow-btn" data-dow="0">Su</button>
+            <button class="dow-btn active" data-dow="1">Mo</button>
+            <button class="dow-btn" data-dow="2">Tu</button>
+            <button class="dow-btn" data-dow="3">We</button>
+            <button class="dow-btn" data-dow="4">Th</button>
+            <button class="dow-btn" data-dow="5">Fr</button>
+            <button class="dow-btn" data-dow="6">Sa</button>
+          </div>
+          <div id="weekPicker" class="hidden">
+            <div class="recur-sub-title" style="margin-top:10px;">Which Week</div>
+            <div class="week-row">
+              <button class="week-btn active" data-week="1">1st</button>
+              <button class="week-btn" data-week="2">2nd</button>
+              <button class="week-btn" data-week="3">3rd</button>
+              <button class="week-btn" data-week="4">4th</button>
+              <button class="week-btn" data-week="-1">Last</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="full">
+        <label>Note (optional)</label>
+        <textarea id="inputNote" placeholder="e.g. Beginner-friendly, prefer baseline rallying..."></textarea>
       </div>
     </div>
+
+    <button class="submit-btn" id="submitBtn">SIGN ME UP</button>
   </div>
+</div>
+</div>
+
+<!-- ── RECURRING MANAGER MODAL ── -->
+<div class="overlay" id="recurMgrOverlay">
+<div class="modal" id="recurMgrModal">
+  <div class="modal-header" style="background:#5b21b6;">
+    <h3>Recurring Signups</h3>
+    <p>All standing court commitments</p>
+    <button class="modal-close" onclick="closeRecurringMgr()">✕</button>
+  </div>
+  <div class="recur-mgr-body">
+    <div id="recurMgrList"><div class="cal-loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  const API = '';  // Same origin — backend serves frontend
-  
-  let currentDate = new Date();
-  let currentYear = currentDate.getFullYear();
-  let currentMonth = currentDate.getMonth(); // 0-indexed
-  let sessionCache = {};
-  let activeDate = null;
-  let selectedGameType = 'singles';
+const API = '';
+let curYear = new Date().getFullYear();
+let curMonth = new Date().getMonth();
+let sessionCache = {};
+let activeDate = null;
 
-  const calGrid = document.getElementById('calGrid');
-  const monthTitle = document.getElementById('monthTitle');
-  const overlay = document.getElementById('overlay');
-  const modalDateTitle = document.getElementById('modalDateTitle');
-  const playerList = document.getElementById('playerList');
-  const submitBtn = document.getElementById('submitBtn');
-  const inputName = document.getElementById('inputName');
-  const inputEmail = document.getElementById('inputEmail');
-  const inputNote = document.getElementById('inputNote');
+// Form state
+let selGameType = 'singles';
+let selTimeType = 'slot';
+let selSlot = 'morning';
+let isRecurring = false;
+let recurType = 'weekly';
+let recurDow = 1;
+let recurWeek = 1;
 
-  const MONTH_NAMES = ['January','February','March','April','May','June',
-    'July','August','September','October','November','December'];
-  const DAY_NAMES_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WEEK_LABELS = {1:'1st',2:'2nd',3:'3rd',4:'4th','-1':'Last'};
+const SLOT_LABELS = {morning:'🌅 Morning',noon:'☀️ Noon',afternoon:'🌤 Afternoon',evening:'🌆 Evening'};
 
-  // ── UTILS ──────────────────────────────────────────────────────────────────
-  function padDate(y, m, d) {
-    return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+function pad(n){ return String(n).padStart(2,'0'); }
+function padDate(y,m,d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
+function friendlyDate(ds){
+  const [y,m,d]=ds.split('-').map(Number);
+  return new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+}
+function formatTime(t){ // "08:00" -> "8:00 AM"
+  if(!t) return '';
+  const [h,m]=t.split(':').map(Number);
+  const ap=h>=12?'PM':'AM'; const h12=h%12||12;
+  return `${h12}:${pad(m)} ${ap}`;
+}
+function timeLabel(p){
+  if(p.timeType==='range' && p.timeFrom) return `${formatTime(p.timeFrom)} – ${formatTime(p.timeTo)}`;
+  if(p.timeType==='slot' && p.timeSlot) return SLOT_LABELS[p.timeSlot]||p.timeSlot;
+  return '';
+}
+function recurLabel(rule){
+  const dow = DAYS_FULL[rule.recurrence.dayOfWeek];
+  if(rule.recurrence.type==='weekly') return `Every ${dow}`;
+  const wk = WEEK_LABELS[rule.recurrence.week]||'';
+  return `${wk} ${dow} of each month`;
+}
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type}`; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function isToday(y,m,d){ const n=new Date(); return n.getFullYear()===y&&n.getMonth()===m&&n.getDate()===d; }
+function isPast(y,m,d){ const n=new Date(); n.setHours(0,0,0,0); return new Date(y,m,d)<n; }
+
+// ── API ──────────────────────────────────────────────
+async function fetchMonth(y,m){
+  const key=`${y}-${pad(m+1)}`;
+  const res=await fetch(`${API}/api/sessions?month=${key}`);
+  const sessions=await res.json();
+  sessionCache={};
+  sessions.forEach(s=>{ sessionCache[s.date]=s; });
+}
+async function apiSignup(date,body){
+  const res=await fetch(`${API}/api/sessions/${date}/signup`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error||'Failed');}
+  return res.json();
+}
+async function apiDeletePlayer(date,pid){
+  const res=await fetch(`${API}/api/sessions/${date}/signup/${pid}`,{method:'DELETE'});
+  if(!res.ok) throw new Error('Failed to remove');
+  return res.json();
+}
+async function apiAddRecurring(body){
+  const res=await fetch(`${API}/api/recurring`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error||'Failed');}
+  return res.json();
+}
+async function apiDeleteRecurring(id){
+  const res=await fetch(`${API}/api/recurring/${id}`,{method:'DELETE'});
+  if(!res.ok) throw new Error('Failed');
+  return res.json();
+}
+async function apiGetRecurring(){
+  const res=await fetch(`${API}/api/recurring`);
+  return res.json();
+}
+
+// ── CALENDAR ─────────────────────────────────────────
+async function renderCalendar(){
+  document.getElementById('monthTitle').textContent=`${MONTHS[curMonth]} ${curYear}`;
+  document.getElementById('calGrid').innerHTML='<div class="cal-loading"><div class="spinner"></div>Loading...</div>';
+  await fetchMonth(curYear,curMonth);
+  buildGrid();
+}
+function buildGrid(){
+  const firstDay=new Date(curYear,curMonth,1).getDay();
+  const days=new Date(curYear,curMonth+1,0).getDate();
+  let html='';
+  for(let i=0;i<firstDay;i++) html+='<div class="day-cell empty"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=padDate(curYear,curMonth,d);
+    const sess=sessionCache[ds]||{players:[],recurringPlayers:[]};
+    const allPlayers=[...(sess.players||[]),...(sess.recurringPlayers||[])];
+    const today=isToday(curYear,curMonth,d);
+    const past=isPast(curYear,curMonth,d);
+    let cls='day-cell'+(today?' today':'')+(past?' past':'')+(allPlayers.length?' has-players':'');
+    const MAX=2;
+    const chips=allPlayers.slice(0,MAX).map(p=>{
+      const chipCls=p.isRecurring?'chip-recurring':`chip-${p.gameType}`;
+      return `<div class="player-chip ${chipCls}">${escHtml(p.name.split(' ')[0])}</div>`;
+    }).join('');
+    const more=allPlayers.length>MAX?`<div class="more-label">+${allPlayers.length-MAX} more</div>`:'';
+    html+=`<div class="${cls}" data-date="${ds}" ${past?'':` onclick="openModal('${ds}')"`}>
+      <span class="day-num">${d}</span>
+      <div class="player-chips">${chips}${more}</div>
+      ${!past?'<span class="add-hint">+</span>':''}
+    </div>`;
   }
-  function friendlyDate(dateStr) {
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  document.getElementById('calGrid').innerHTML=html;
+}
+
+// ── DAY MODAL ────────────────────────────────────────
+function openModal(ds){
+  activeDate=ds;
+  document.getElementById('modalDateTitle').textContent=friendlyDate(ds);
+  renderPlayerList(ds);
+  resetForm();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  activeDate=null;
+}
+document.getElementById('overlay').addEventListener('click',e=>{ if(e.target===document.getElementById('overlay')) closeModal(); });
+
+function renderPlayerList(ds){
+  const sess=sessionCache[ds]||{players:[],recurringPlayers:[]};
+  const one=sess.players||[];
+  const rec=sess.recurringPlayers||[];
+  const pl=document.getElementById('playerList');
+  if(!one.length && !rec.length){
+    pl.innerHTML='<div class="no-players">No players yet — be first! 🎾</div>';
+    return;
   }
-  function showToast(msg, type='success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = `toast ${type}`;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
-  function isToday(y, m, d) {
-    const n = new Date();
-    return n.getFullYear()===y && n.getMonth()===m && n.getDate()===d;
-  }
-  function isPast(y, m, d) {
-    const n = new Date(); n.setHours(0,0,0,0);
-    return new Date(y, m, d) < n;
-  }
-
-  // ── API ────────────────────────────────────────────────────────────────────
-  async function fetchMonth(y, m) {
-    const key = `${y}-${String(m+1).padStart(2,'0')}`;
-    const res = await fetch(`${API}/api/sessions?month=${key}`);
-    const sessions = await res.json();
-    sessionCache = {};
-    sessions.forEach(s => { sessionCache[s.date] = s; });
-  }
-
-  async function signUp(dateStr, name, email, gameType, note) {
-    const res = await fetch(`${API}/api/sessions/${dateStr}/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, gameType, note })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Failed to sign up');
-    }
-    return res.json();
-  }
-
-  async function removePlayer(dateStr, playerId) {
-    const res = await fetch(`${API}/api/sessions/${dateStr}/signup/${playerId}`, {
-      method: 'DELETE'
-    });
-    if (!res.ok) throw new Error('Failed to remove player');
-    return res.json();
-  }
-
-  // ── CALENDAR ───────────────────────────────────────────────────────────────
-  async function renderCalendar() {
-    monthTitle.textContent = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
-    calGrid.innerHTML = '<div class="cal-loading"><div class="spinner"></div>Loading...</div>';
-    await fetchMonth(currentYear, currentMonth);
-    buildGrid();
-  }
-
-  function buildGrid() {
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-    let html = '';
-    for (let i = 0; i < firstDay; i++) {
-      html += `<div class="day-cell empty"></div>`;
-    }
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = padDate(currentYear, currentMonth, d);
-      const session = sessionCache[dateStr] || { players: [] };
-      const players = session.players || [];
-      const today = isToday(currentYear, currentMonth, d);
-      const past = isPast(currentYear, currentMonth, d);
-
-      let classes = 'day-cell';
-      if (today) classes += ' today';
-      if (past) classes += ' past';
-      if (players.length > 0) classes += ' has-players';
-
-      const MAX_SHOW = 2;
-      const chipsHtml = players.slice(0, MAX_SHOW).map(p =>
-        `<div class="player-chip chip-${p.gameType}">${p.name.split(' ')[0]}</div>`
-      ).join('');
-      const moreHtml = players.length > MAX_SHOW
-        ? `<div class="more-label">+${players.length - MAX_SHOW} more</div>` : '';
-
-      html += `
-        <div class="${classes}" data-date="${dateStr}" ${past ? '' : 'onclick="openModal(\''+dateStr+'\')"'}>
-          <span class="day-num">${d}</span>
-          <div class="player-chips">${chipsHtml}${moreHtml}</div>
-          ${!past ? '<span class="add-hint">+</span>' : ''}
-        </div>`;
-    }
-    calGrid.innerHTML = html;
-  }
-
-  // ── MODAL ──────────────────────────────────────────────────────────────────
-  function openModal(dateStr) {
-    activeDate = dateStr;
-    modalDateTitle.textContent = friendlyDate(dateStr);
-    renderPlayerList(dateStr);
-    resetForm();
-    overlay.classList.add('open');
-  }
-
-  function renderPlayerList(dateStr) {
-    const session = sessionCache[dateStr] || { players: [] };
-    const players = session.players || [];
-    if (players.length === 0) {
-      playerList.innerHTML = `<div class="no-players">No players yet — sign up below and be the first! 🎾</div>`;
-      return;
-    }
-    playerList.innerHTML = players.map(p => `
-      <div class="player-row">
-        <div class="player-info">
-          <div class="player-name">${escapeHtml(p.name)}</div>
-          ${p.note ? `<div class="player-meta">${escapeHtml(p.note)}</div>` : ''}
-        </div>
-        <span class="badge badge-${p.gameType}">${p.gameType === 'singles' ? 'Singles' : 'Doubles'}</span>
-        <button class="delete-btn" title="Remove this signup" onclick="handleRemove('${dateStr}','${p._id}')">🗑</button>
+  const rowHtml=(p,isRec)=>`
+    <div class="player-row">
+      <div class="player-info">
+        <div class="player-name">${escHtml(p.name)}</div>
+        ${timeLabel(p)?`<div class="player-time">${timeLabel(p)}</div>`:''}
+        ${p.note?`<div class="player-note">${escHtml(p.note)}</div>`:''}
+        ${isRec?`<div class="player-recur">⟳ ${escHtml(p.recurrenceLabel||'Recurring')}</div>`:''}
       </div>
-    `).join('');
-  }
+      <span class="badge badge-${p.gameType}">${p.gameType==='singles'?'Singles':'Doubles'}</span>
+      ${isRec
+        ? `<button class="del-btn" title="Remove recurring" onclick="handleDelRecurring('${p.recurrenceId}')">🗑</button>`
+        : `<button class="del-btn" title="Remove" onclick="handleDelPlayer('${ds}','${p._id}')">🗑</button>`
+      }
+    </div>`;
+  pl.innerHTML=one.map(p=>rowHtml(p,false)).join('')+rec.map(p=>rowHtml(p,true)).join('');
+}
 
-  function closeModal() {
-    overlay.classList.remove('open');
-    activeDate = null;
-  }
+// ── FORM STATE ───────────────────────────────────────
+function resetForm(){
+  document.getElementById('inputName').value='';
+  document.getElementById('inputEmail').value='';
+  document.getElementById('inputNote').value='';
+  document.getElementById('timeFrom').value='08:00';
+  document.getElementById('timeTo').value='10:00';
+  setGameType('singles');
+  setTimeType('slot');
+  setSlot('morning');
+  if(isRecurring) toggleRecurring();
+  setRecurType('weekly');
+  setDow(1);
+  setWeek(1);
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('submitBtn').textContent='SIGN ME UP';
+}
 
-  function resetForm() {
-    inputName.value = '';
-    inputEmail.value = '';
-    inputNote.value = '';
-    selectedGameType = 'singles';
-    document.querySelectorAll('.type-btn').forEach(b => {
-      b.classList.toggle('selected', b.dataset.type === 'singles');
-    });
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'SIGN ME UP';
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-              .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-
-  // ── EVENTS ─────────────────────────────────────────────────────────────────
-  document.getElementById('prevMonth').addEventListener('click', () => {
-    currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-    renderCalendar();
+function setGameType(t){
+  selGameType=t;
+  document.querySelectorAll('.type-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.type===t);
   });
-  document.getElementById('nextMonth').addEventListener('click', () => {
-    currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-    renderCalendar();
-  });
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+}
+function setTimeType(t){
+  selTimeType=t;
+  document.querySelectorAll('[data-ttype]').forEach(b=>b.classList.toggle('active',b.dataset.ttype===t));
+  document.getElementById('slotPicker').classList.toggle('hidden',t!=='slot');
+  document.getElementById('rangePicker').classList.toggle('hidden',t!=='range');
+}
+function setSlot(s){
+  selSlot=s;
+  document.querySelectorAll('.slot-btn').forEach(b=>b.classList.toggle('active',b.dataset.slot===s));
+}
+function toggleRecurring(){
+  isRecurring=!isRecurring;
+  document.getElementById('recurToggle').classList.toggle('on',isRecurring);
+  document.getElementById('recurCheck').textContent=isRecurring?'✓':'';
+  document.getElementById('recurOptions').classList.toggle('visible',isRecurring);
+  document.getElementById('submitBtn').textContent=isRecurring?'SAVE RECURRING SIGNUP':'SIGN ME UP';
+}
+function setRecurType(t){
+  recurType=t;
+  document.querySelectorAll('.recur-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.rtype===t));
+  document.getElementById('weekPicker').classList.toggle('hidden',t!=='monthly');
+}
+function setDow(d){
+  recurDow=d;
+  document.querySelectorAll('.dow-btn').forEach(b=>b.classList.toggle('active',+b.dataset.dow===d));
+}
+function setWeek(w){
+  recurWeek=w;
+  document.querySelectorAll('.week-btn').forEach(b=>b.classList.toggle('active',+b.dataset.week===w));
+}
 
-  document.querySelectorAll('.type-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedGameType = btn.dataset.type;
-      document.querySelectorAll('.type-btn').forEach(b => {
-        b.classList.toggle('selected', b.dataset.type === selectedGameType);
+// Wire up all toggle buttons
+document.querySelectorAll('.type-btn').forEach(b=>b.addEventListener('click',()=>setGameType(b.dataset.type)));
+document.querySelectorAll('[data-ttype]').forEach(b=>b.addEventListener('click',()=>setTimeType(b.dataset.ttype)));
+document.querySelectorAll('.slot-btn').forEach(b=>b.addEventListener('click',()=>setSlot(b.dataset.slot)));
+document.querySelectorAll('.recur-type-btn').forEach(b=>b.addEventListener('click',()=>setRecurType(b.dataset.rtype)));
+document.querySelectorAll('.dow-btn').forEach(b=>b.addEventListener('click',()=>setDow(+b.dataset.dow)));
+document.querySelectorAll('.week-btn').forEach(b=>b.addEventListener('click',()=>setWeek(+b.dataset.week)));
+
+// ── SUBMIT ───────────────────────────────────────────
+document.getElementById('submitBtn').addEventListener('click', async ()=>{
+  const name=document.getElementById('inputName').value.trim();
+  if(!name){showToast('Please enter your name','error');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='SAVING...';
+
+  const body={
+    name, email:document.getElementById('inputEmail').value.trim(),
+    gameType:selGameType,
+    timeType:selTimeType,
+    timeFrom:selTimeType==='range'?document.getElementById('timeFrom').value:'',
+    timeTo:selTimeType==='range'?document.getElementById('timeTo').value:'',
+    timeSlot:selTimeType==='slot'?selSlot:'',
+    note:document.getElementById('inputNote').value.trim()
+  };
+
+  try {
+    if(isRecurring){
+      const rlabel=recurType==='weekly'
+        ? `Every ${DAYS_FULL[recurDow]}`
+        : `${WEEK_LABELS[recurWeek]} ${DAYS_FULL[recurDow]} of month`;
+      const result=await apiAddRecurring({
+        ...body,
+        recurrence:{type:recurType, dayOfWeek:recurDow, week:recurWeek},
+        recurrenceLabel:rlabel
       });
-    });
-  });
-
-  submitBtn.addEventListener('click', async () => {
-    const name = inputName.value.trim();
-    if (!name) { showToast('Please enter your name', 'error'); inputName.focus(); return; }
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'SIGNING UP...';
-    try {
-      const session = await signUp(activeDate, name, inputEmail.value, selectedGameType, inputNote.value);
-      sessionCache[activeDate] = session;
+      showToast(`⟳ Recurring saved: ${rlabel}`);
+      // Refresh current month to show new recurring
+      await fetchMonth(curYear,curMonth);
+      buildGrid();
+      if(activeDate) renderPlayerList(activeDate);
+    } else {
+      const result=await apiSignup(activeDate,body);
+      sessionCache[activeDate]=result;
       buildGrid();
       renderPlayerList(activeDate);
-      inputName.value = ''; inputEmail.value = ''; inputNote.value = '';
       showToast(`✅ You're on for ${friendlyDate(activeDate)}!`);
-    } catch (err) {
-      showToast(err.message, 'error');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'SIGN ME UP';
     }
-  });
-
-  async function handleRemove(dateStr, playerId) {
-    if (!confirm('Remove this signup?')) return;
-    try {
-      const session = await removePlayer(dateStr, playerId);
-      sessionCache[dateStr] = session;
-      buildGrid();
-      renderPlayerList(dateStr);
-      showToast('Signup removed.');
-    } catch (err) {
-      showToast('Could not remove signup.', 'error');
-    }
+    document.getElementById('inputName').value='';
+    document.getElementById('inputEmail').value='';
+    document.getElementById('inputNote').value='';
+  } catch(err){
+    showToast(err.message,'error');
+  } finally {
+    btn.disabled=false;
+    btn.textContent=isRecurring?'SAVE RECURRING SIGNUP':'SIGN ME UP';
   }
+});
 
-  // ── INIT ───────────────────────────────────────────────────────────────────
-  renderCalendar();
+async function handleDelPlayer(ds,pid){
+  if(!confirm('Remove this signup?')) return;
+  try {
+    const result=await apiDeletePlayer(ds,pid);
+    sessionCache[ds]=result;
+    buildGrid();
+    renderPlayerList(ds);
+    showToast('Signup removed.');
+  } catch(e){ showToast('Could not remove.','error'); }
+}
+async function handleDelRecurring(rid){
+  if(!confirm('Remove this recurring signup? It will disappear from all future dates.')) return;
+  try {
+    await apiDeleteRecurring(rid);
+    showToast('Recurring signup removed.');
+    await fetchMonth(curYear,curMonth);
+    buildGrid();
+    if(activeDate) renderPlayerList(activeDate);
+  } catch(e){ showToast('Could not remove.','error'); }
+}
+
+// ── RECURRING MANAGER ────────────────────────────────
+async function openRecurringMgr(){
+  document.getElementById('recurMgrOverlay').classList.add('open');
+  const list=document.getElementById('recurMgrList');
+  list.innerHTML='<div class="cal-loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const rules=await apiGetRecurring();
+    if(!rules.length){ list.innerHTML='<p style="color:#aaa;font-style:italic;font-size:.85rem;">No recurring signups yet.</p>'; return; }
+    list.innerHTML=rules.map(r=>`
+      <div class="recur-rule-row">
+        <div class="recur-rule-info">
+          <div class="recur-rule-name">${escHtml(r.name)}</div>
+          <div class="recur-rule-detail">${recurLabel(r)} · ${r.gameType==='singles'?'Singles':'Doubles'} · ${timeLabel(r)||'Any time'}</div>
+          ${r.note?`<div class="player-note">${escHtml(r.note)}</div>`:''}
+        </div>
+        <button class="del-btn" onclick="handleDelRecurringMgr('${r._id}',this)">🗑</button>
+      </div>
+    `).join('');
+  } catch(e){ list.innerHTML='<p style="color:#ef4444;">Failed to load.</p>'; }
+}
+function closeRecurringMgr(){
+  document.getElementById('recurMgrOverlay').classList.remove('open');
+}
+document.getElementById('recurMgrOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('recurMgrOverlay')) closeRecurringMgr(); });
+
+async function handleDelRecurringMgr(id, btn){
+  if(!confirm('Remove this recurring signup from all future dates?')) return;
+  try {
+    await apiDeleteRecurring(id);
+    btn.closest('.recur-rule-row').remove();
+    await fetchMonth(curYear,curMonth);
+    buildGrid();
+    showToast('Recurring signup removed.');
+  } catch(e){ showToast('Could not remove.','error'); }
+}
+
+// ── NAV ──────────────────────────────────────────────
+document.getElementById('prevMonth').addEventListener('click',()=>{
+  curMonth--; if(curMonth<0){curMonth=11;curYear--;} renderCalendar();
+});
+document.getElementById('nextMonth').addEventListener('click',()=>{
+  curMonth++; if(curMonth>11){curMonth=0;curYear++;} renderCalendar();
+});
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+renderCalendar();
 </script>
 </body>
 </html>
